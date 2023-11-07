@@ -6,6 +6,7 @@ namespace TTMC.Tools
 {
 	public class Engine
 	{
+		private static Random random = new();
 		public static string See(byte[] bytes)
 		{
 			string resp = string.Empty;
@@ -15,26 +16,34 @@ namespace TTMC.Tools
 			}
 			return resp[..^1];
 		}
-		public static void InsertDate()
+		public static string CreateRandomPassword(int length = 100, string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789")
 		{
-			Debug.Print("[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "] ", ConsoleColor.Gray, false);
-		}
-		public static string CreateRandomPassword(int length = 100)
-		{
-			string validChars = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-			char[] chars = new char[length];
+			string text = string.Empty;
 			for (int i = 0; i < length; i++)
 			{
-				chars[i] = validChars[new Random().Next(0, validChars.Length)];
+				text += validChars[random.Next(validChars.Length)];
 			}
-			return new string(chars);
+			return text;
+		}
+		public static byte[] Serialize(IEnumerable<byte> array)
+		{
+			return Combine(array.ToArray());
+		}
+		public static byte[] Serialize(IEnumerable<byte[]> array)
+		{
+			List<byte> list = new();
+			foreach (byte[] item in array)
+			{
+				list.AddRange(Prefixed(item));
+			}
+			return Combine(list.ToArray());
 		}
 		public static byte[] Serialize(IEnumerable<string> array)
 		{
 			List<byte> list = new();
 			foreach (string item in array)
 			{
-				list.AddRange(Prefixed(Encoding.UTF8.GetBytes(item)));
+				list.AddRange(Prefixed(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -43,7 +52,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (char item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -52,7 +61,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (bool item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -61,7 +70,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (int item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -70,7 +79,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (uint item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -79,7 +88,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (short item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -88,7 +97,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (ushort item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -97,7 +106,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (long item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -106,7 +115,16 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (ulong item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
+			}
+			return Combine(list.ToArray());
+		}
+		public static byte[] Serialize(IEnumerable<Half> array)
+		{
+			List<byte> list = new();
+			foreach (Half item in array)
+			{
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -115,7 +133,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (float item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -124,7 +142,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (double item in array)
 			{
-				list.AddRange(Prefixed(BitConverter.GetBytes(item)));
+				list.AddRange(BitConverter.GetBytes(item));
 			}
 			return Combine(list.ToArray());
 		}
@@ -133,7 +151,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (Guid item in array)
 			{
-				list.AddRange(Prefixed(item.ToByteArray()));
+				list.AddRange(item.ToByteArray());
 			}
 			return Combine(list.ToArray());
 		}
@@ -142,7 +160,16 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (DateTime item in array)
 			{
-				list.AddRange(Prefixed(item.ToBinary()));
+				list.AddRange(BitConverter.GetBytes(item.ToBinary()));
+			}
+			return Combine(list.ToArray());
+		}
+		public static byte[] Serialize(IEnumerable<TimeSpan> array)
+		{
+			List<byte> list = new();
+			foreach (TimeSpan item in array)
+			{
+				list.AddRange(BitConverter.GetBytes(item.Ticks));
 			}
 			return Combine(list.ToArray());
 		}
@@ -151,7 +178,7 @@ namespace TTMC.Tools
 			List<byte> list = new();
 			foreach (Color item in array)
 			{
-				list.AddRange(Prefixed(item.ToArgb()));
+				list.AddRange(BitConverter.GetBytes(item.ToArgb()));
 			}
 			return Combine(list.ToArray());
 		}
@@ -186,185 +213,153 @@ namespace TTMC.Tools
 			}
 			else if (typeof(T) == typeof(char[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<char> list = new();
+				for (int i = 0; i < data.Length; i += 2)
 				{
-					List<char> list = new();
-					foreach (byte[] array in bytes)
-					{
-						char item = BitConverter.ToChar(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					char item = BitConverter.ToChar(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(bool[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<bool> list = new();
+				for (int i = 0; i < data.Length; i++)
 				{
-					List<bool> list = new();
-					foreach (byte[] array in bytes)
-					{
-						bool item = BitConverter.ToBoolean(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					bool item = BitConverter.ToBoolean(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(int[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<int> list = new();
+				for (int i = 0; i < data.Length; i += 4)
 				{
-					List<int> list = new();
-					foreach (byte[] array in bytes)
-					{
-						int item = BitConverter.ToInt32(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					int item = BitConverter.ToInt32(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(uint[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<uint> list = new();
+				for (int i = 0; i < data.Length; i += 4)
 				{
-					List<uint> list = new();
-					foreach (byte[] array in bytes)
-					{
-						uint item = BitConverter.ToUInt32(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					uint item = BitConverter.ToUInt32(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(short[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<short> list = new();
+				for (int i = 0; i < data.Length; i += 2)
 				{
-					List<short> list = new();
-					foreach (byte[] array in bytes)
-					{
-						short item = BitConverter.ToInt16(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					short item = BitConverter.ToInt16(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(ushort[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<ushort> list = new();
+				for (int i = 0; i < data.Length; i += 2)
 				{
-					List<ushort> list = new();
-					foreach (byte[] array in bytes)
-					{
-						ushort item = BitConverter.ToUInt16(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					ushort item = BitConverter.ToUInt16(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(long[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<long> list = new();
+				for (int i = 0; i < data.Length; i += 8)
 				{
-					List<long> list = new();
-					foreach (byte[] array in bytes)
-					{
-						long item = BitConverter.ToInt64(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					long item = BitConverter.ToInt64(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(ulong[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<ulong> list = new();
+				for (int i = 0; i < data.Length; i += 8)
 				{
-					List<ulong> list = new();
-					foreach (byte[] array in bytes)
-					{
-						ulong item = BitConverter.ToUInt64(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					ulong item = BitConverter.ToUInt64(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
+			}
+			else if (typeof(T) == typeof(Half[]))
+			{
+				List<Half> list = new();
+				for (int i = 0; i < data.Length; i += 2)
+				{
+					Half item = BitConverter.ToHalf(data, i);
+					list.Add(item);
+				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(float[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<float> list = new();
+				for (int i = 0; i < data.Length; i += 4)
 				{
-					List<float> list = new();
-					foreach (byte[] array in bytes)
-					{
-						float item = BitConverter.ToSingle(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					float item = BitConverter.ToSingle(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(double[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<double> list = new();
+				for (int i = 0; i < data.Length; i += 8)
 				{
-					List<double> list = new();
-					foreach (byte[] array in bytes)
-					{
-						double item = BitConverter.ToDouble(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					double item = BitConverter.ToDouble(data, i);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(Guid[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<Guid> list = new();
+				for (int i = 0; i < data.Length; i += 16)
 				{
-					List<Guid> list = new();
-					foreach (byte[] array in bytes)
-					{
-						Guid item = new(array);
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					Guid item = new(data[i..][..16]);
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(DateTime[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<DateTime> list = new();
+				for (int i = 0; i < data.Length; i += 8)
 				{
-					List<DateTime> list = new();
-					foreach (byte[] array in bytes)
-					{
-						DateTime item = DateTime.FromBinary(BitConverter.ToInt64(array));
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					DateTime item = DateTime.FromBinary(BitConverter.ToInt64(data, i));
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
+			}
+			else if (typeof(T) == typeof(TimeSpan[]))
+			{
+				List<TimeSpan> list = new();
+				for (int i = 0; i < data.Length; i += 8)
+				{
+					TimeSpan item = TimeSpan.FromTicks(BitConverter.ToInt64(data, i));
+					list.Add(item);
+				}
+				return (T)(object)list.ToArray();
 			}
 			else if (typeof(T) == typeof(Color[]))
 			{
-				byte[][]? bytes = Deserialize<byte[][]>(data);
-				if (bytes != null)
+				List<Color> list = new();
+				for (int i = 0; i < data.Length; i += 8)
 				{
-					List<Color> list = new();
-					foreach (byte[] array in bytes)
-					{
-						Color item = Color.FromArgb(BitConverter.ToInt32(array));
-						list.Add(item);
-					}
-					return (T)(object)list.ToArray();
+					Color item = Color.FromArgb(BitConverter.ToInt32(data, i));
+					list.Add(item);
 				}
+				return (T)(object)list.ToArray();
 			}
 			throw new("Invalid type");
 		}
@@ -448,6 +443,10 @@ namespace TTMC.Tools
 		{
 			return Prefixed(BitConverter.GetBytes(number));
 		}
+		public static byte[] Prefixed(Half number)
+		{
+			return Prefixed(BitConverter.GetBytes(number));
+		}
 		public static byte[] Prefixed(float number)
 		{
 			return Prefixed(BitConverter.GetBytes(number));
@@ -463,6 +462,10 @@ namespace TTMC.Tools
 		public static byte[] Prefixed(DateTime dateTime)
 		{
 			return Prefixed(dateTime.ToBinary());
+		}
+		public static byte[] Prefixed(TimeSpan timeSpan)
+		{
+			return Prefixed(timeSpan.Ticks);
 		}
 		public static byte[] Prefixed(Color color)
 		{
@@ -508,14 +511,7 @@ namespace TTMC.Tools
 		public static void Print(object value, ConsoleColor color = ConsoleColor.Gray, bool newLine = true)
 		{
 			Console.ForegroundColor = color;
-			if (newLine)
-			{
-				Console.WriteLine(value);
-			}
-			else
-			{
-				Console.Write(value);
-			}
+			Console.Write(value + (newLine ? "\n" : string.Empty));
 			Console.ResetColor();
 		}
 		public static void Log(object value)
@@ -541,6 +537,10 @@ namespace TTMC.Tools
 		public static void Comment(object value)
 		{
 			Print(value, ConsoleColor.DarkGray);
+		}
+		public static void InsertDate()
+		{
+			Debug.Print("[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "] ", ConsoleColor.Gray, false);
 		}
 	}
 }
