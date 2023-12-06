@@ -500,8 +500,11 @@ namespace TTMC.Tools
 			Dictionary<string, string> keyValuePairs = new();
 			foreach (string value in text.Split('&'))
 			{
-				string[] tmp = value.Split('=');
-				keyValuePairs.Add(tmp[0], tmp[1]);
+				if (value.Contains('='))
+				{
+					string[] tmp = value.Split('=');
+					keyValuePairs.Add(tmp[0], tmp[1]);
+				}
 			}
 			return keyValuePairs;
 		}
