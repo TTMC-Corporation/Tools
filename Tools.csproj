@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>TTMC.Tools</RootNamespace>
     <AssemblyName>Tools</AssemblyName>
     <NoWin32Manifest>true</NoWin32Manifest>
-    <Version>0.0.2</Version>
+    <Version>0.0.4</Version>
   </PropertyGroup>
 
 </Project>

@@ -4,9 +4,8 @@ namespace TTMC.Tools
 {
 	public class TOTP
 	{
-		public static string Generate(byte[] secret, int totpLength = 6)
+		public static string Generate(byte[] secret, long counter, int totpLength = 6)
 		{
-			long counter = DateTimeOffset.UtcNow.ToUnixTimeSeconds() / 30;
 			byte[] counterBytes = BitConverter.GetBytes(counter);
 			if (BitConverter.IsLittleEndian) { Array.Reverse(counterBytes); }
 			HMACSHA1 hmac = new HMACSHA1(secret);
@@ -16,9 +15,17 @@ namespace TTMC.Tools
 			int totpValue = binary % (int)Math.Pow(10, totpLength);
 			return totpValue.ToString($"D{totpLength}");
 		}
-		public static bool CheckValid(string totp, byte[] secret, int totpLength = 6)
+		public static bool CheckValid(string totp, byte[] secret, long neighbour = 1, int totpLength = 6)
 		{
-			return totp == Generate(secret, totpLength);
+			long counter = DateTimeOffset.UtcNow.ToUnixTimeSeconds() / 30;
+			for (long i = (counter - neighbour); i <= (counter + neighbour); i++)
+			{
+				if (totp == Generate(secret, i, totpLength))
+				{
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
